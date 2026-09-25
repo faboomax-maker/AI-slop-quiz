@@ -229,7 +229,20 @@ const QUIPS = {
     "Le slip reste en place.",
     "Ca nous rendra pas les lands betas, mais c'est un début.",
     "Même pas besoin de payer les fdp.",
-    "Œil de lynx, slip de fer."
+    "Œil de lynx, slip de fer.",
+    "Coup de bol, ça compte pas.",
+    "Même une horloge cassée a raison deux fois par jour.",
+    "Profite, ça va pas durer."
+  ],
+  // le jeu rage quand le joueur trouve (titre à la place de « Bien vu ! »)
+  rage: [
+    "LA CHATTE PUTAIN LA CHATTE QU'IL A",
+    "MAIS QUELLE CHATTE PUTAIN",
+    "IL A TRICHÉ C'EST PAS POSSIBLE",
+    "RENDS L'ARGENT",
+    "T'AS REGARDÉ LES RÉPONSES OU QUOI",
+    "LE COCU IL A TROUVÉ",
+    "OK LÀ TU ME CASSES LES COUILLES"
   ],
   bad: [
     "Allez, enlève ton slip.",
@@ -249,8 +262,8 @@ const QUIPS = {
 
 // Bilan de fin de partie selon le nombre de bonnes réponses
 const ENDINGS = [
-  [10, "Sans faute !", "Slip en acier trempé et livraison gratuite à vie. Respect, fdp."],
-  [8, "Bien vu", "Tu gardes ton slip. De justesse."],
+  [10, "RENDS L'ARGENT", "LA CHATTE PUTAIN LA CHATTE QU'IL A. Slip en acier trempé et livraison gratuite à vie, fdp."],
+  [8, "Pff, coup de bol", "Tu gardes ton slip. De justesse. T'as eu de la chatte, c'est tout."],
   [6, "Pas mal", "Le slip tient, mais faudra payer les fdp."],
   [4, "Bof", "Slip à mi-cuisse. Ça nous rendra pas les lands betas."],
   [0, "Aïe", "Enlève ton slip, fils de p… frais de port. C'EST IA PUTAIN."]
@@ -484,7 +497,9 @@ function renderReveal(a) {
   const box = stage.querySelector(".reveal");
   box.querySelector("img").src = a.item.imageURL;
   const miss = a.item.truth === "ai" ? QUIPS.fooled : QUIPS.paranoid;
-  box.querySelector(".verdict").textContent = a.correct ? "Bien vu !" : pick(miss);
+  // le jeu rage une fois sur trois, et à chaque fois dès 3 bonnes réponses d'affilée
+  const rage = state.streak >= 3 || Math.random() < 1 / 3;
+  box.querySelector(".verdict").textContent = a.correct ? (rage ? pick(QUIPS.rage) : "Bien vu !") : pick(miss);
   box.querySelector(".quip").textContent = pick(a.correct ? QUIPS.good : QUIPS.bad);
   const truth = box.querySelector(".truth");
   truth.textContent = `C'était : ${LABEL[a.item.truth]} (${a.item.kind[0].toLowerCase() + a.item.kind.slice(1)})`;
