@@ -260,9 +260,11 @@ const QUIPS = {
   paranoid: ["C'ÉTAIT PAS IA PUTAIN C'EST PAS IA"]
 };
 
-// Bilan de fin de partie selon le nombre de bonnes réponses
+// Bilan de fin de partie selon le nombre de bonnes réponses (au hasard s'il y en a plusieurs par niveau)
 const ENDINGS = [
+  [10, "Sans faute !", "Slip en acier trempé et livraison gratuite à vie. Respect, fdp."],
   [10, "RENDS L'ARGENT", "LA CHATTE PUTAIN LA CHATTE QU'IL A. Slip en acier trempé et livraison gratuite à vie, fdp."],
+  [8, "Bien vu", "Tu gardes ton slip. De justesse."],
   [8, "Pff, coup de bol", "Tu gardes ton slip. De justesse. T'as eu de la chatte, c'est tout."],
   [6, "Pas mal", "Le slip tient, mais faudra payer les fdp."],
   [4, "Bof", "Slip à mi-cuisse. Ça nous rendra pas les lands betas."],
@@ -497,8 +499,8 @@ function renderReveal(a) {
   const box = stage.querySelector(".reveal");
   box.querySelector("img").src = a.item.imageURL;
   const miss = a.item.truth === "ai" ? QUIPS.fooled : QUIPS.paranoid;
-  // le jeu rage une fois sur trois, et à chaque fois dès 3 bonnes réponses d'affilée
-  const rage = state.streak >= 3 || Math.random() < 1 / 3;
+  // de temps en temps (une fois sur quatre), le jeu rage au lieu de dire « Bien vu ! »
+  const rage = Math.random() < 1 / 4;
   box.querySelector(".verdict").textContent = a.correct ? (rage ? pick(QUIPS.rage) : "Bien vu !") : pick(miss);
   box.querySelector(".quip").textContent = pick(a.correct ? QUIPS.good : QUIPS.bad);
   const truth = box.querySelector(".truth");
@@ -518,7 +520,8 @@ function renderResult() {
   const best = getBest();
   const record = state.score > best;
   if (record) setBest(state.score);
-  const [, title, quip] = ENDINGS.find(([min]) => (good / state.answers.length) * 10 >= min);
+  const level = ENDINGS.find(([min]) => (good / state.answers.length) * 10 >= min)[0];
+  const [, title, quip] = pick(ENDINGS.filter(([min]) => min === level)); // au hasard parmi les bilans du même niveau
 
   stage.innerHTML = `<div class="result">
     <h2>${record ? "Nouveau record !" : title}</h2>
