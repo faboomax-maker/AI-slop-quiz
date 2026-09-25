@@ -155,7 +155,7 @@ body {
 .result { position: absolute; inset: 0; overflow: auto; display: flex; flex-direction: column; gap: 16px; padding-bottom: 4px; }
 .result h2 { font-family: var(--serif); font-size: 34px; }
 .big { font-family: var(--serif); font-size: 72px; font-weight: 700; line-height: 1; }
-.big small { font-family: var(--sans); font-size: 20px; color: var(--muted); font-weight: 400; }
+.big small { font-family: var(--serif); font-size: 36px; color: var(--muted); font-weight: 400; }
 .summary { color: var(--muted); line-height: 1.4; }
 .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 .thumb { position: relative; aspect-ratio: 1; border-radius: 4px; overflow: hidden; border: 3px solid; }
@@ -229,16 +229,15 @@ const QUIPS = {
     "Le slip reste en place.",
     "Ca nous rendra pas les lands betas, mais c'est un début.",
     "Même pas besoin de payer les fdp.",
-    "Œil de lynx, slip de fer.",
-    "Pas de Jésus en crevettes pour toi."
+    "Œil de lynx, slip de fer."
   ],
   bad: [
     "Allez, enlève ton slip.",
     "Espèce de fdp. Frais de port, hein.",
-    "Frais de port à ta charge, fdp.",
+    "Frais de port à ta charge, fdp compris?",
     "Le slip commence à glisser…",
     "Colis perdu, et ton slip avec.",
-    "Même La Poste aurait fait mieux, fdp.",
+    "Même La Poste aurait fait mieux fdp compris?",
     "Retourne liker sur facebook des poste de macron avec jean-michel sur un jet-ski.",
     "Ça nous rendra pas les lands betas, et toi non plus."
   ],
@@ -515,9 +514,9 @@ function renderResult() {
 
   stage.innerHTML = `<div class="result">
     <h2>${record ? "Nouveau record !" : title}</h2>
-    <p class="big">${state.score} <small>pts</small></p>
+    <p class="big">${good}<small> / ${state.answers.length}</small></p>
     <p class="quip">${quip}</p>
-    <p class="summary">${good} bonnes réponses sur ${state.answers.length}, meilleure série : ${state.bestStreak}</p>
+    <p class="summary">${state.score} pts, meilleure série : ${state.bestStreak}</p>
     <div class="grid" id="grid"></div>
     <p class="key"><span style="color:var(--ai)">C'était de l'IA</span><span style="color:var(--real)">C'était pas de l'IA</span></p>
     <button class="btn ghost" id="share">Partager mon score</button>
