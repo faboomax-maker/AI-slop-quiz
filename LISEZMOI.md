@@ -1,6 +1,6 @@
 # The AI Slop Game – web app
 
-Le jeu tient dans index.html (images, textes et code compris). Les autres fichiers servent à l'icône sur l'écran d'accueil.
+Le code, les textes et la liste des images sont dans index.html. Les images elles-mêmes sont dans le dossier images/ (compressées en JPEG, environ 80 Ko chacune). Les autres fichiers servent à l'icône sur l'écran d'accueil.
 
 ## Tester tout de suite sur ton PC
 Double-clique sur index.html : le jeu s'ouvre dans ton navigateur. Tu peux jouer à la souris (glisser la carte) ou avec les flèches gauche/droite du clavier.
