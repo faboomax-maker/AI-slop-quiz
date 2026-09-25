@@ -225,30 +225,36 @@ const QUIPS = {
   good: [
     "Tu gardes ton slip. Pour l'instant.",
     "Bien joué, espèce de frais de port.",
-    "Livraison offerte, frais de port inclus.",
+    "Livraison offerte, fils de pute inclus.",
     "Le slip reste en place.",
-    "Colis livré, rien à signaler.",
-    "Même pas besoin de payer les frais de port."
+    "Ca nous rendra pas les lands betas, mais c'est un début.",
+    "Même pas besoin de payer les fdp.",
+    "Œil de lynx, slip de fer.",
+    "Pas de Jésus en crevettes pour toi."
   ],
   bad: [
     "Allez, enlève ton slip.",
-    "Espèce de frais de port.",
-    "Frais de port à ta charge.",
+    "Espèce de fdp. Frais de port, hein.",
+    "Frais de port à ta charge, fdp.",
     "Le slip commence à glisser…",
     "Colis perdu, et ton slip avec.",
-    "Même La Poste aurait fait mieux."
+    "Même La Poste aurait fait mieux, fdp.",
+    "Retourne liker des Jésus en crevettes sur Facebook.",
+    "Ça nous rendra pas les lands betas, et toi non plus."
   ],
   // le joueur a dit « pas IA » alors que c'était de l'IA
-  fooled: ["C'EST IA PUTAIN C'EST IA"]
+  fooled: ["C'ÉTAIT IA PUTAIN C'EST IA"],
+  // le joueur a dit « IA » alors que c'était une vraie image
+  paranoid: ["C'ÉTAIT PAS IA PUTAIN C'EST PAS IA"]
 };
 
 // Bilan de fin de partie selon le nombre de bonnes réponses
 const ENDINGS = [
-  [10, "Sans faute !", "Livraison gratuite à vie, et tu gardes ton slip."],
+  [10, "Sans faute !", "Slip en acier trempé et livraison gratuite à vie. Respect, fdp."],
   [8, "Bien vu", "Tu gardes ton slip. De justesse."],
-  [6, "Pas mal", "Le slip tient, mais il y a des frais de port."],
-  [4, "Bof", "Le slip est à mi-cuisse. Espèce de frais de port."],
-  [0, "Aïe", "Enlève ton slip, espèce de frais de port. C'EST IA PUTAIN."]
+  [6, "Pas mal", "Le slip tient, mais faudra payer les fdp."],
+  [4, "Bof", "Slip à mi-cuisse. Ça nous rendra pas les lands betas."],
+  [0, "Aïe", "Enlève ton slip, fils de p… frais de port. C'EST IA PUTAIN."]
 ];
 
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
@@ -485,8 +491,8 @@ function renderReveal(a) {
   </div>`;
   const box = stage.querySelector(".reveal");
   box.querySelector("img").src = a.item.imageURL;
-  const fooled = !a.correct && a.item.truth === "ai";
-  box.querySelector(".verdict").textContent = a.correct ? "Bien vu !" : fooled ? pick(QUIPS.fooled) : "Raté…";
+  const miss = a.item.truth === "ai" ? QUIPS.fooled : QUIPS.paranoid;
+  box.querySelector(".verdict").textContent = a.correct ? "Bien vu !" : pick(miss);
   box.querySelector(".quip").textContent = pick(a.correct ? QUIPS.good : QUIPS.bad);
   const truth = box.querySelector(".truth");
   truth.textContent = `C'était : ${LABEL[a.item.truth]} (${a.item.kind.toLowerCase()})`;
