@@ -291,11 +291,15 @@ async function startGame() {
     loadCards(shuffle(DATA.filter((d) => d.source === source)), n)));
   let cards = parts.flat();
 
-  // S'il manque des images (liens morts), on complète avec n'importe quelle source
-  if (cards.length < ROUND) {
-    const used = new Set(cards.map((c) => c.id));
-    cards = cards.concat(await loadCards(shuffle(DATA.filter((d) => !used.has(d.id))), ROUND - cards.length));
-  }
+  // S'il manque des images (liens morts), on complète avec la même réponse pour garder 5 IA / 5 pas IA
+  const missing = { ai: 0, real: 0 };
+  MIX.forEach(([source, n], k) => {
+    missing[DATA.find((d) => d.source === source).truth] += n - parts[k].length;
+  });
+  const used = new Set(cards.map((c) => c.id));
+  const extras = await Promise.all(Object.entries(missing).map(([truth, n]) =>
+    n > 0 ? loadCards(shuffle(DATA.filter((d) => d.truth === truth && !used.has(d.id))), n) : []));
+  cards = cards.concat(extras.flat());
   if (mySession !== session) return; // le joueur a quitté pendant le chargement
 
   state.deck = shuffle(cards);
