@@ -1,4 +1,4 @@
-# IA ou pas IA – web app
+# The AI Slop Game – web app
 
 Le jeu tient dans index.html (images, textes et code compris). Les autres fichiers servent à l'icône sur l'écran d'accueil.
 

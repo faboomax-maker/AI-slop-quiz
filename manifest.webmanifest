@@ -1,6 +1,6 @@
 {
-  "name": "IA ou pas IA ?",
-  "short_name": "IA ou pas IA",
+  "name": "The AI Slop Game",
+  "short_name": "AI Slop Game",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#EDF1F7",

@@ -6,12 +6,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="IA ou pas IA">
+<meta name="apple-mobile-web-app-title" content="AI Slop Game">
 <meta name="theme-color" content="#EDF1F7">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
-<title>IA ou pas IA ?</title>
+<title>The AI Slop Game</title>
 <style>
 :root {
   --table: #EDF1F7;
@@ -56,7 +56,20 @@ body {
   font-weight: 700;
   letter-spacing: -0.01em;
 }
+.tagline {
+  display: inline-block;
+  align-self: flex-start;
+  background: var(--ai);
+  color: #fff;
+  font-weight: 800;
+  font-size: clamp(15px, 4.6vw, 19px);
+  letter-spacing: 0.02em;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transform: rotate(-2deg);
+}
 .lead { font-size: 20px; line-height: 1.35; }
+.quip { color: var(--muted); font-style: italic; line-height: 1.4; }
 .note { color: var(--muted); font-size: 16px; line-height: 1.45; }
 .legend { display: flex; gap: 10px; }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 15px; }
@@ -160,7 +173,8 @@ body {
 <div id="app">
 
   <section id="home" class="screen active">
-    <h1>IA<br>ou pas IA ?</h1>
+    <h1>The AI<br>Slop Game</h1>
+    <p class="tagline">C'EST IA PUTAIN C'EST IA</p>
     <p class="lead">Glisse à gauche si une IA a créé ou retouché l'image, à droite sinon.</p>
     <p class="note">Attention : un montage Photoshop fait à la main, c'est « Pas IA ». Même quand c'est complètement absurde.</p>
     <div class="legend">
@@ -205,6 +219,39 @@ const MIX = [
 ];
 const ROUND = 10;
 const LABEL = { ai: "IA", real: "Pas IA" };
+
+// Petites phrases affichées après chaque réponse
+const QUIPS = {
+  good: [
+    "Tu gardes ton slip. Pour l'instant.",
+    "Bien joué, espèce de frais de port.",
+    "Livraison offerte, frais de port inclus.",
+    "Le slip reste en place.",
+    "Colis livré, rien à signaler.",
+    "Même pas besoin de payer les frais de port."
+  ],
+  bad: [
+    "Allez, enlève ton slip.",
+    "Espèce de frais de port.",
+    "Frais de port à ta charge.",
+    "Le slip commence à glisser…",
+    "Colis perdu, et ton slip avec.",
+    "Même La Poste aurait fait mieux."
+  ],
+  // le joueur a dit « pas IA » alors que c'était de l'IA
+  fooled: ["C'EST IA PUTAIN C'EST IA"]
+};
+
+// Bilan de fin de partie selon le nombre de bonnes réponses
+const ENDINGS = [
+  [10, "Sans faute !", "Livraison gratuite à vie, et tu gardes ton slip."],
+  [8, "Bien vu", "Tu gardes ton slip. De justesse."],
+  [6, "Pas mal", "Le slip tient, mais il y a des frais de port."],
+  [4, "Bof", "Le slip est à mi-cuisse. Espèce de frais de port."],
+  [0, "Aïe", "Enlève ton slip, espèce de frais de port. C'EST IA PUTAIN."]
+];
+
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
 const COLOR = { ai: "var(--ai)", real: "var(--real)" };
 
 const $ = (sel) => document.querySelector(sel);
@@ -429,6 +476,7 @@ function renderReveal(a) {
     <div class="scroll">
       <img alt="">
       <p class="verdict"></p>
+      <p class="quip"></p>
       <p class="truth"></p>
       <p class="clue"></p>
       <p class="stat"></p>
@@ -437,7 +485,9 @@ function renderReveal(a) {
   </div>`;
   const box = stage.querySelector(".reveal");
   box.querySelector("img").src = a.item.imageURL;
-  box.querySelector(".verdict").textContent = a.correct ? "Bien vu !" : "Raté…";
+  const fooled = !a.correct && a.item.truth === "ai";
+  box.querySelector(".verdict").textContent = a.correct ? "Bien vu !" : fooled ? pick(QUIPS.fooled) : "Raté…";
+  box.querySelector(".quip").textContent = pick(a.correct ? QUIPS.good : QUIPS.bad);
   const truth = box.querySelector(".truth");
   truth.textContent = `C'était : ${LABEL[a.item.truth]} (${a.item.kind.toLowerCase()})`;
   truth.style.color = COLOR[a.item.truth];
@@ -455,10 +505,12 @@ function renderResult() {
   const best = getBest();
   const record = state.score > best;
   if (record) setBest(state.score);
+  const [, title, quip] = ENDINGS.find(([min]) => (good / state.answers.length) * 10 >= min);
 
   stage.innerHTML = `<div class="result">
-    <h2>${record ? "Nouveau record !" : "Partie terminée"}</h2>
+    <h2>${record ? "Nouveau record !" : title}</h2>
     <p class="big">${state.score} <small>pts</small></p>
+    <p class="quip">${quip}</p>
     <p class="summary">${good} bonnes réponses sur ${state.answers.length}, meilleure série : ${state.bestStreak}</p>
     <div class="grid" id="grid"></div>
     <p class="key"><span style="color:var(--ai)">C'était de l'IA</span><span style="color:var(--real)">C'était pas de l'IA</span></p>
@@ -482,7 +534,7 @@ function renderResult() {
     grid.append(cell);
   }
 
-  const text = `J'ai fait ${good}/${state.answers.length} (${state.score} pts) à IA ou pas IA. Tu fais mieux ? ${location.href.startsWith("http") ? location.href : ""}`.trim();
+  const text = `J'ai fait ${good}/${state.answers.length} (${state.score} pts) au AI Slop Game. ${quip} Tu fais mieux ? ${location.href.startsWith("http") ? location.href : ""}`.trim();
   $("#share").onclick = async () => {
     try {
       if (navigator.share) await navigator.share({ text });
